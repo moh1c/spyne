@@ -228,10 +228,16 @@ def complex_add(document, cls, tags):
             raise ValueError("Unhandled schema_tag / type combination. %r %r"
                     % (v, a.schema_tag))
 
-        if a.min_occurs != 1:  # 1 is the xml schema default
+        # 1 is the default but set it anyways
+        # if a.min_occurs None dont set it:  # 1 is the xml schema default
+        # TODO: This might break some stuff check later
+        if a.min_occurs is not None:
             member.set('minOccurs', str(a.min_occurs))
 
-        if a.max_occurs != 1:  # 1 is the xml schema default
+        # 1 is the default but set it anyways
+        # if a.max_occurs None dont set it:  # 1 is the xml schema default
+        # TODO: This might break some stuff check later
+        if a.max_occurs is not None:
             val = a.max_occurs
             if val in (D('inf'), float('inf')):
                 val = 'unbounded'

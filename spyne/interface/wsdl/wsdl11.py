@@ -286,11 +286,11 @@ class Wsdl11(XmlSchema):
                 port_binding_names.append((port_type_name, binding_name))
 
         else:
-            port_type = self._get_or_create_port_type(service_name)
-            port_type.set('name', service_name)
+            port_type = self._get_or_create_port_type(applied_service_name)
+            port_type.set('name', applied_service_name)
 
             binding_name = self._get_binding_name(service_name)
-            port_binding_names.append((service_name, binding_name))
+            port_binding_names.append((applied_service_name, binding_name))
 
         for method in service.public_methods.values():
             check_method_port(service, method)
@@ -382,6 +382,7 @@ class Wsdl11(XmlSchema):
         pref_tns = self.interface.get_namespace_prefix(self.interface.get_tns())
         input_binding_ns = ns.get_binding_ns(self.interface.app.in_protocol.type)
         output_binding_ns = ns.get_binding_ns(self.interface.app.out_protocol.type)
+        applied_service_name = self._get_applied_service_name(service)
 
         def inner(method, binding):
             operation = etree.Element(WSDL11("operation"))
@@ -419,9 +420,9 @@ class Wsdl11(XmlSchema):
                     soap_header = SubElement(input, input_binding_ns('header'))
                     soap_header.set('use', 'literal')
                     soap_header.set('message', '%s:%s' % (
-                                header.get_namespace_prefix(self.interface),
+                                pref_tns,
                                 in_header_message_name))
-                    soap_header.set('part', header.get_type_name())
+                    soap_header.set('part', header.get_wsdl_part_name())
 
             if not (method.is_async or method.is_callback):
                 output = SubElement(operation, WSDL11("output"))
@@ -451,9 +452,9 @@ class Wsdl11(XmlSchema):
                         soap_header = SubElement(output, output_binding_ns("header"))
                         soap_header.set('use', 'literal')
                         soap_header.set('message', '%s:%s' % (
-                                header.get_namespace_prefix(self.interface),
+                                pref_tns,
                                 out_header_message_name))
-                        soap_header.set('part', header.get_type_name())
+                        soap_header.set('part', header.get_wsdl_part_name())
 
                 if not (method.faults is None):
                     for f in method.faults:
@@ -509,7 +510,7 @@ class Wsdl11(XmlSchema):
             if cb_binding is None:
                 cb_binding = SubElement(root, WSDL11("binding"))
                 cb_binding.set('name', service_name)
-                cb_binding.set('type', '%s:%s'% (pref_tns, service_name))
+                cb_binding.set('type', '%s:%s'% (pref_tns, applied_service_name))
 
                 transport = SubElement(cb_binding, input_binding_ns("binding"))
                 transport.set('style', 'document')

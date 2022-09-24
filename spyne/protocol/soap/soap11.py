@@ -253,8 +253,8 @@ class Soap11(XmlDocument):
                                               for element in ctx.in_header_doc])
                 for i, head_class in enumerate(header_class):
                     if i < len(header_class):
-                        nsval = "{%s}%s" % (head_class.__namespace__,
-                                                       head_class.__type_name__)
+                        nsval = "{%s}%s" % (head_class.get_namespace(),
+                                                       head_class.get_element_name())
                         header_doc = in_header_dict.get(nsval, None)
                         if header_doc is not None:
                             headers[i] = self.from_element(ctx, head_class,
