@@ -310,12 +310,12 @@ class Wsdl11(XmlSchema):
             op_input = SubElement(operation, WSDL11("input"))
             op_input.set('name', method.in_message.get_element_name())
             op_input.set('message',
-                          method.in_message.get_element_name_ns(self.interface))
+                          method.in_message.get_wsdl_message_name_ns(self.interface))
 
             if (not method.is_callback) and (not method.is_async):
                 op_output = SubElement(operation, WSDL11("output"))
                 op_output.set('name', method.out_message.get_element_name())
-                op_output.set('message', method.out_message.get_element_name_ns(
+                op_output.set('message', method.out_message.get_wsdl_message_name_ns(
                                                                 self.interface))
 
                 if not (method.faults is None):
@@ -350,16 +350,16 @@ class Wsdl11(XmlSchema):
     def add_messages_for_methods(self, service, root, messages):
         for method in service.public_methods.values():
             self._add_message_for_object(root, messages, method.in_message,
-                                    method.in_message.get_element_name())
+                                    method.in_message.get_wsdl_message_name())
             self._add_message_for_object(root, messages, method.out_message,
-                                    method.out_message.get_element_name())
+                                    method.out_message.get_wsdl_message_name())
 
             if method.in_header is not None:
                 if len(method.in_header) > 1:
                     in_header_message_name = ''.join((method.name,
                                                       _in_header_msg_suffix))
                 else:
-                    in_header_message_name = method.in_header[0].get_type_name()
+                    in_header_message_name = method.in_header[0].get_wsdl_message_name()
                 self._add_message_for_object(root, messages,
                                     method.in_header, in_header_message_name)
 
@@ -368,13 +368,13 @@ class Wsdl11(XmlSchema):
                     out_header_message_name = ''.join((method.name,
                                                        _out_header_msg_suffix))
                 else:
-                    out_header_message_name = method.out_header[0].get_type_name()
+                    out_header_message_name = method.out_header[0].get_wsdl_message_name()
                 self._add_message_for_object(root, messages,
                                     method.out_header, out_header_message_name)
 
             for fault in method.faults:
                 self._add_message_for_object(root, messages, fault,
-                                        fault.get_type_name())
+                                        fault.get_wsdl_message_name())
 
     def add_bindings_for_methods(self, service, root, service_name,
                                      cb_binding):
@@ -414,7 +414,7 @@ class Wsdl11(XmlSchema):
                     in_header_message_name = ''.join((method.name,
                                                       _in_header_msg_suffix))
                 else:
-                    in_header_message_name = in_headers[0].get_type_name()
+                    in_header_message_name = in_headers[0].get_wsdl_message_name()
 
                 for header in in_headers:
                     soap_header = SubElement(input, input_binding_ns('header'))
@@ -446,7 +446,7 @@ class Wsdl11(XmlSchema):
                         out_header_message_name = ''.join((method.name,
                                                         _out_header_msg_suffix))
                     else:
-                        out_header_message_name = out_headers[0].get_type_name()
+                        out_header_message_name = out_headers[0].get_wsdl_message_name()
 
                     for header in out_headers:
                         soap_header = SubElement(output, output_binding_ns("header"))

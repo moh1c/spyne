@@ -275,6 +275,10 @@ class ModelBase(object):
     """The public type name of the class. Use ``get_type_name()`` instead of
     accessing it directly."""
 
+    __wsdl_message_name__ = None
+    """The public wsdl message name of the class. Use ``get_wsdl_message_name()`` instead of
+    accessing it directly."""
+
     Value = type(None)
     """The value of this type is an instance of this class"""
 
@@ -357,6 +361,11 @@ class ModelBase(object):
 
         wsdl_part_name = None
         """This specifies which string should be used as wsdl message part name when this
+            type is serialized under a ComplexModel ie."parameters".
+        """
+
+        wsdl_message_name = None
+        """This specifies which string should be used as wsdl message name when this
             type is serialized under a ComplexModel ie."parameters".
         """
 
@@ -608,6 +617,8 @@ class ModelBase(object):
 
         return retval
 
+
+
     # FIXME: Rename this to get_type_name_with_ns_pref
     @classmethod
     def get_type_name_ns(cls, interface):
@@ -627,6 +638,10 @@ class ModelBase(object):
         return cls.Attributes.wsdl_part_name or cls.get_element_name()
 
     @classmethod
+    def get_wsdl_message_name(cls):
+        return cls.Attributes.wsdl_message_name or cls.__wsdl_message_name__ or cls.get_element_name()
+
+    @classmethod
     def get_element_name_ns(cls, interface):
         ns = cls.Attributes.sub_ns or cls.get_namespace()
         if ns is DEFAULT_NS:
@@ -634,6 +649,15 @@ class ModelBase(object):
         if ns is not None:
             pref = interface.get_namespace_prefix(ns)
             return "%s:%s" % (pref, cls.get_element_name())
+
+    @classmethod
+    def get_wsdl_message_name_ns(cls, interface):
+        ns = cls.Attributes.sub_ns or cls.get_namespace()
+        if ns is DEFAULT_NS:
+            ns = interface.get_tns()
+        if ns is not None:
+            pref = interface.get_namespace_prefix(ns)
+            return "%s:%s" % (pref, cls.get_wsdl_message_name())
 
     @classmethod
     def to_bytes(cls, value):
