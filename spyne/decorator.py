@@ -322,8 +322,11 @@ def rpc(*params, **kparams):
     :param _out_header: A type or an iterable of types that that this method
         sends as outgoing header.
     :param _operation_name: The function's soap operation name. The operation
-        and SoapAction names will be equal to the value of ``_operation_name``.
+        and SoapAction names will be equal to the value of ``_operation_name``
+        if ``_soap_action`` is not set.
         Default is the function name.
+    :param _soap_action: The function's soapAction name.
+        Default is the ``_operation_name``.
     :param _in_message_name: The public name of the function's input message.
         Default is: ``_operation_name + REQUEST_SUFFIX``.
     :param _out_message_name: The public name of the function's output message.
@@ -406,6 +409,7 @@ def rpc(*params, **kparams):
             _href = kparams.pop("_href", None)
             _logged = kparams.pop("_logged", True)
             _internal_key_suffix = kparams.pop('_internal_key_suffix', '')
+            _soap_action = kparams.pop("_soap_action", None)
             if '_service' in kparams and '_service_class' in kparams:
                 raise LogicError("Please pass only one of '_service' and "
                                                              "'_service_class'")
@@ -534,7 +538,7 @@ def rpc(*params, **kparams):
                 internal_key_suffix=_internal_key_suffix,
                 default_on_null=_default_on_null,
                 event_managers=_event_managers,
-                logged=_logged,
+                logged=_logged, soap_action=_soap_action
             )
 
             if _patterns is not None and _no_self:
