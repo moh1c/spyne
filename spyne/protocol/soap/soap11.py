@@ -52,7 +52,7 @@ from spyne import BODY_STYLE_WRAPPED
 from spyne.util import six
 from spyne.const.xml import DEFAULT_NS
 from spyne.const.http import HTTP_405, HTTP_500
-from spyne.error import RequestNotAllowed
+from spyne.error import RequestNotAllowed, ResourceNotFoundError
 from spyne.model.fault import Fault
 from spyne.model.primitive import Date, Time, DateTime
 from spyne.protocol.xml import XmlDocument
@@ -211,6 +211,8 @@ class Soap11(XmlDocument):
 
         ctx.in_document = envelope_xml
 
+        if body_document is None:
+            raise ResourceNotFoundError("")
         if body_document.tag == '{%s}Fault' % self.ns_soap_env:
             ctx.in_body_doc = body_document
 
