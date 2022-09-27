@@ -898,6 +898,11 @@ class XmlDocument(SubXmlBase):
             if len(inst.detail) > 0:
                 _append(subelts, root_dict_to_etree({'detail':inst.detail}))
 
+        elif isinstance(inst.detail, ComplexModelBase):
+            element = E('detail')
+            self.complex_to_parent(ctx, inst.detail.__class__, inst.detail, element, ns)
+            _append(subelts, element)
+
         elif inst.detail is None:
             pass
 
